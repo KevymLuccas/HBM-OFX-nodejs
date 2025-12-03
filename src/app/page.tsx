@@ -37,7 +37,7 @@ interface ConversionResult {
 export default function Home() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedBank, setSelectedBank] = useState<BankType>('auto');
-  const [showLayout, setShowLayout] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
   const [isConverting, setIsConverting] = useState(false);
   const [result, setResult] = useState<ConversionResult | null>(null);
   const [showAnimation, setShowAnimation] = useState(false);
@@ -50,7 +50,7 @@ export default function Home() {
 
   const handleBankChange = (bankType: BankType) => {
     setSelectedBank(bankType);
-    setShowLayout(bankType !== 'auto');
+    setShowDropdown(false);
   };
 
   const handleConvert = async () => {
@@ -117,24 +117,28 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-black flex">
+    <div className="min-h-screen bg-gradient-to-br from-green-900 via-green-800 to-emerald-900 flex">
       {/* LADO ESQUERDO - FUNDO COM UPLOAD E CONVERSÃO */}
-      <div 
-        className="w-1/2 bg-cover bg-center bg-no-repeat flex flex-col items-center justify-center p-8 relative"
-        style={{ backgroundImage: "url('/fundo.png')" }}
-      >
-        {/* Overlay escuro para melhor legibilidade */}
-        <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+      <div className="w-1/2 bg-gradient-to-br from-green-700 via-emerald-600 to-green-800 flex flex-col items-center justify-center p-8 relative">
+        {/* Padrão geométrico de fundo */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `radial-gradient(circle at 25% 25%, #10b981 0%, transparent 50%),
+                              radial-gradient(circle at 75% 75%, #059669 0%, transparent 50%),
+                              radial-gradient(circle at 75% 25%, #047857 0%, transparent 50%),
+                              radial-gradient(circle at 25% 75%, #065f46 0%, transparent 50%)`
+          }}></div>
+        </div>
         
         <div className="relative z-10 text-center">
           <h1 className="text-7xl font-bold mb-8 text-white animate-pulse drop-shadow-2xl">
-            HBM OFX
+             HBM OFX 
           </h1>
           
           {/* UPLOAD PDF CENTRALIZADO */}
-          <div className="bg-white bg-opacity-90 backdrop-blur-sm text-black p-8 rounded-2xl shadow-2xl mb-8 max-w-lg">
-            <h3 className="text-2xl font-bold mb-6 text-gray-800"> Upload do PDF</h3>
-            <div className="border-3 border-dashed border-blue-400 p-8 rounded-xl text-center bg-blue-50 hover:bg-blue-100 transition-all">
+          <div className="bg-white bg-opacity-95 backdrop-blur-sm text-black p-8 rounded-2xl shadow-2xl mb-8 max-w-lg border-4 border-green-300">
+            <h3 className="text-2xl font-bold mb-6 text-green-800"> Upload do PDF</h3>
+            <div className="border-3 border-dashed border-green-400 p-8 rounded-xl text-center bg-green-50 hover:bg-green-100 transition-all">
               <input 
                 type="file" 
                 accept=".pdf" 
@@ -146,14 +150,14 @@ export default function Home() {
                 htmlFor="pdf-upload" 
                 className="cursor-pointer flex flex-col items-center"
               >
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-4 flex items-center justify-center text-white text-3xl shadow-lg">
+                <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full mb-4 flex items-center justify-center text-white text-3xl shadow-lg">
                   
                 </div>
-                <span className="text-xl font-semibold text-gray-700">
+                <span className="text-xl font-semibold text-green-700">
                   {selectedFile ? ` ${selectedFile.name}` : 'Clique para selecionar PDF'}
                 </span>
                 {!selectedFile && (
-                  <span className="text-sm text-gray-500 mt-2">
+                  <span className="text-sm text-green-600 mt-2">
                     Arraste e solte ou clique aqui
                   </span>
                 )}
@@ -165,7 +169,7 @@ export default function Home() {
           <button 
             onClick={handleConvert}
             disabled={!selectedFile || isConverting}
-            className="bg-gradient-to-r from-green-500 via-blue-600 to-purple-700 hover:from-green-600 hover:via-blue-700 hover:to-purple-800 disabled:from-gray-400 disabled:to-gray-600 text-white font-bold py-6 px-12 rounded-2xl text-2xl shadow-2xl transform hover:scale-105 transition-all duration-300 animate-bounce"
+            className="bg-gradient-to-r from-green-500 via-emerald-600 to-green-700 hover:from-green-600 hover:via-emerald-700 hover:to-green-800 disabled:from-gray-400 disabled:to-gray-600 text-white font-bold py-6 px-12 rounded-2xl text-2xl shadow-2xl transform hover:scale-105 transition-all duration-300 animate-bounce border-4 border-green-300"
           >
             {isConverting ? ' CONVERTENDO...' : ' CONVERTER PARA OFX'}
           </button>
@@ -173,40 +177,57 @@ export default function Home() {
       </div>
 
       {/* LADO DIREITO - SELEÇÃO DE LAYOUT E RESULTADOS */}
-      <div className="w-1/2 bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white p-8 overflow-y-auto">
+      <div className="w-1/2 bg-gradient-to-br from-green-900 via-emerald-800 to-green-900 text-white p-8 overflow-y-auto">
         {!showAnimation && !result && (
           <div className="h-full flex flex-col">
-            {/* SELEÇÃO DE BANCO MODERNA */}
+            {/* DROPDOWN DE SELEÇÃO DE BANCO */}
             <div className="mb-8">
-              <h2 className="text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">
+              <h2 className="text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-300">
                  Escolha seu Banco
               </h2>
               
-              <div className="grid grid-cols-1 gap-3">
-                {Object.entries(BANKS).map(([key, bank]) => (
-                  <button
-                    key={key}
-                    onClick={() => handleBankChange(key as BankType)}
-                    className={`p-4 rounded-xl border-2 text-left transition-all duration-300 flex items-center gap-4 ${
-                      selectedBank === key
-                        ? 'border-blue-500 bg-blue-900 bg-opacity-50 shadow-lg shadow-blue-500/25 transform scale-105'
-                        : 'border-gray-600 hover:border-gray-400 hover:bg-gray-800'
-                    }`}
-                  >
-                    <span className="text-3xl">{bank.icon}</span>
-                    <div className="font-semibold text-lg">{bank.name}</div>
-                  </button>
-                ))}
+              {/* DROPDOWN CUSTOMIZADO */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowDropdown(!showDropdown)}
+                  className="w-full p-4 bg-green-800 border-2 border-green-600 rounded-xl text-left flex items-center justify-between hover:bg-green-700 transition-all duration-300 shadow-lg"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">{BANKS[selectedBank].icon}</span>
+                    <span className="text-lg font-semibold">{BANKS[selectedBank].name}</span>
+                  </div>
+                  <span className={`text-2xl transform transition-transform duration-300 ${showDropdown ? 'rotate-180' : ''}`}>
+                    
+                  </span>
+                </button>
+                
+                {/* LISTA DROPDOWN */}
+                {showDropdown && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-green-800 border-2 border-green-600 rounded-xl shadow-2xl z-50 max-h-80 overflow-y-auto">
+                    {Object.entries(BANKS).map(([key, bank]) => (
+                      <button
+                        key={key}
+                        onClick={() => handleBankChange(key as BankType)}
+                        className={`w-full p-4 text-left hover:bg-green-700 transition-all duration-200 flex items-center gap-3 border-b border-green-600 last:border-b-0 ${
+                          selectedBank === key ? 'bg-green-600' : ''
+                        }`}
+                      >
+                        <span className="text-xl">{bank.icon}</span>
+                        <span className="font-medium">{bank.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
             {/* VISUALIZAÇÃO DO LAYOUT */}
             {selectedBank !== 'auto' && BANKS[selectedBank]?.layout && (
-              <div className="flex-1 bg-gray-800 bg-opacity-50 rounded-2xl p-6 border border-gray-600">
-                <h3 className="text-2xl font-bold mb-4 text-blue-400">
+              <div className="flex-1 bg-green-800 bg-opacity-50 rounded-2xl p-6 border-2 border-green-600">
+                <h3 className="text-2xl font-bold mb-4 text-green-300">
                    Preview do Layout - {BANKS[selectedBank].name}
                 </h3>
-                <div className="bg-white rounded-lg p-4">
+                <div className="bg-white rounded-lg p-4 border-2 border-green-400">
                   <img 
                     src={BANKS[selectedBank].layout!} 
                     alt={`Layout ${BANKS[selectedBank].name}`}
@@ -222,14 +243,14 @@ export default function Home() {
         {showAnimation && (
           <div className="h-full flex flex-col items-center justify-center relative overflow-hidden">
             <div className="text-center z-10 relative">
-              <h2 className="text-4xl font-bold mb-8 text-green-400 animate-pulse">
+              <h2 className="text-4xl font-bold mb-8 text-green-300 animate-pulse">
                  PROCESSANDO...
               </h2>
-              <div className="text-2xl font-semibold text-blue-400 mb-4">
+              <div className="text-2xl font-semibold text-green-400 mb-4">
                 Analisando PDF do {BANKS[selectedBank].name}
               </div>
-              <div className="w-64 bg-gray-700 rounded-full h-4 mb-8">
-                <div className="bg-gradient-to-r from-green-400 to-blue-500 h-4 rounded-full animate-pulse" style={{ width: '75%' }}></div>
+              <div className="w-64 bg-green-900 rounded-full h-6 mb-8 border-2 border-green-500">
+                <div className="bg-gradient-to-r from-green-400 to-emerald-500 h-full rounded-full animate-pulse" style={{ width: '75%' }}></div>
               </div>
             </div>
             
@@ -238,7 +259,7 @@ export default function Home() {
               {[...Array(20)].map((_, i) => (
                 <div
                   key={i}
-                  className="absolute text-green-400 font-mono text-lg opacity-70 animate-bounce"
+                  className="absolute text-green-300 font-mono text-lg opacity-70 animate-bounce"
                   style={{
                     left: `${Math.random() * 100}%`,
                     top: `${Math.random() * 100}%`,
@@ -256,8 +277,8 @@ export default function Home() {
         {/* RESULTADO DA CONVERSÃO */}
         {result && !showAnimation && (
           <div className="h-full flex flex-col">
-            <div className="mb-6 bg-green-900 bg-opacity-50 p-6 rounded-2xl border border-green-500">
-              <h2 className="text-3xl font-bold mb-4 text-green-400"> Conversão Realizada!</h2>
+            <div className="mb-6 bg-green-800 bg-opacity-70 p-6 rounded-2xl border-2 border-green-400">
+              <h2 className="text-3xl font-bold mb-4 text-green-300"> Conversão Realizada!</h2>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <strong>Banco:</strong> {BANKS[result.bankType as BankType]?.name || result.bankType}
@@ -270,23 +291,23 @@ export default function Home() {
 
             {/* TABELA DE TRANSAÇÕES */}
             {result.transactions && (
-              <div className="flex-1 bg-gray-800 bg-opacity-50 rounded-2xl p-6 border border-gray-600 mb-6">
-                <h3 className="text-2xl font-bold mb-4 text-blue-400"> Transações Encontradas</h3>
-                <div className="overflow-y-auto max-h-64">
+              <div className="flex-1 bg-green-800 bg-opacity-50 rounded-2xl p-6 border-2 border-green-600 mb-6">
+                <h3 className="text-2xl font-bold mb-4 text-green-300"> Transações Encontradas</h3>
+                <div className="overflow-y-auto max-h-64 border border-green-600 rounded-lg">
                   <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-gray-600">
-                        <th className="text-left p-2">Data</th>
-                        <th className="text-left p-2">Descrição</th>
-                        <th className="text-right p-2">Valor</th>
+                    <thead className="bg-green-700">
+                      <tr className="border-b border-green-600">
+                        <th className="text-left p-3 text-green-200">Data</th>
+                        <th className="text-left p-3 text-green-200">Descrição</th>
+                        <th className="text-right p-3 text-green-200">Valor</th>
                       </tr>
                     </thead>
                     <tbody>
                       {result.transactions.map((transaction, index) => (
-                        <tr key={index} className="border-b border-gray-700 hover:bg-gray-700">
-                          <td className="p-2">{new Date(transaction.date).toLocaleDateString('pt-BR')}</td>
-                          <td className="p-2">{transaction.description}</td>
-                          <td className={`p-2 text-right font-bold ${transaction.amount >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        <tr key={index} className="border-b border-green-700 hover:bg-green-700 transition-colors">
+                          <td className="p-3">{new Date(transaction.date).toLocaleDateString('pt-BR')}</td>
+                          <td className="p-3">{transaction.description}</td>
+                          <td className={`p-3 text-right font-bold ${transaction.amount >= 0 ? 'text-green-300' : 'text-red-300'}`}>
                             R$ {transaction.amount.toFixed(2)}
                           </td>
                         </tr>
@@ -300,7 +321,7 @@ export default function Home() {
             {/* BOTÃO GERAR OFX */}
             <button
               onClick={downloadOFX}
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-4 px-8 rounded-2xl text-xl shadow-lg transform hover:scale-105 transition-all duration-300"
+              className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white font-bold py-4 px-8 rounded-2xl text-xl shadow-lg transform hover:scale-105 transition-all duration-300 border-2 border-green-400"
             >
                GERAR ARQUIVO OFX
             </button>
