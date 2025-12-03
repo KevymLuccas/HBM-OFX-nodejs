@@ -1,4 +1,4 @@
-Ôªø'use client';
+'use client';
 
 import { useState, useEffect, useRef } from 'react';
 import { 
@@ -29,77 +29,77 @@ const BANKS: Record<BankType, {
   supported: boolean;
 }> = {
   'auto': { 
-    name: 'Detec√ß√£o Autom√°tica', 
-    icon: 'ü§ñ', 
+    name: 'DetecÁ„o Autom·tica', 
+    icon: '??', 
     color: 'from-blue-500 to-cyan-400',
     supported: true
   },
   'bb_layout1': { 
     name: 'Banco do Brasil', 
-    icon: 'üè¶', 
+    icon: '??', 
     color: 'from-yellow-500 to-yellow-300',
     layout: '/layouts/banco_do_brasil_layout_1.png',
     supported: true
   },
   'itau_layout1': { 
-    name: 'Ita√∫ Unibanco', 
-    icon: 'üíº', 
+    name: 'Ita˙ Unibanco', 
+    icon: '??', 
     color: 'from-orange-600 to-orange-400',
     layout: '/layouts/layout_itau_1.png',
     supported: true
   },
   'santander_layout1': { 
     name: 'Santander', 
-    icon: 'üî¥', 
+    icon: '??', 
     color: 'from-red-600 to-red-400',
     layout: '/layouts/santander_layout_1.png',
     supported: true
   },
   'safra_layout1': { 
     name: 'Banco Safra', 
-    icon: 'üü¢', 
+    icon: '??', 
     color: 'from-green-600 to-emerald-400',
     layout: '/layouts/safra_layout_1.png',
     supported: true
   },
   'sicoob_layout1': { 
     name: 'Sicoob Layout 1', 
-    icon: 'üîµ', 
+    icon: '??', 
     color: 'from-blue-600 to-blue-400',
     layout: '/layouts/sicoob_layout_1.png',
     supported: true
   },
   'sicoob_layout2': { 
     name: 'Sicoob Layout 2', 
-    icon: 'üîµ', 
+    icon: '??', 
     color: 'from-blue-700 to-cyan-500',
     layout: '/layouts/sicoob_layout_2.png',
     supported: true
   },
   'sicredi_layout1': { 
     name: 'Sicredi Layout 1', 
-    icon: 'üü£', 
+    icon: '??', 
     color: 'from-purple-600 to-purple-400',
     layout: '/layouts/sicredi_layout_1.png',
     supported: true
   },
   'sicredi_layout2': { 
     name: 'Sicredi Layout 2', 
-    icon: 'üü£', 
+    icon: '??', 
     color: 'from-purple-700 to-fuchsia-500',
     layout: '/layouts/sicredi_layout_2.png',
     supported: true
   },
   'pagseguro_layout1': { 
     name: 'PagSeguro', 
-    icon: 'üí≥', 
+    icon: '??', 
     color: 'from-amber-600 to-amber-400',
     layout: '/layouts/pagseguro_layout.png',
     supported: true
   },
   'revolution_layout1': { 
     name: 'Revolution/Cora', 
-    icon: '‚ö°', 
+    icon: '?', 
     color: 'from-violet-600 to-violet-400',
     layout: '/layouts/revolution_layout.png',
     supported: true
@@ -150,7 +150,7 @@ export default function Home() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Anima√ß√£o de progresso
+  // AnimaÁ„o de progresso
   useEffect(() => {
     if (showAnimation) {
       const interval = setInterval(() => {
@@ -177,7 +177,7 @@ export default function Home() {
         return;
       }
       if (file.size > 10 * 1024 * 1024) { // 10MB limit
-        setFileError('Arquivo muito grande. M√°ximo 10MB');
+        setFileError('Arquivo muito grande. M·ximo 10MB');
         return;
       }
       setSelectedFile(file);
@@ -205,7 +205,7 @@ export default function Home() {
         return;
       }
       if (file.size > 10 * 1024 * 1024) {
-        setFileError('Arquivo muito grande. M√°ximo 10MB');
+        setFileError('Arquivo muito grande. M·ximo 10MB');
         return;
       }
       setSelectedFile(file);
@@ -241,26 +241,26 @@ export default function Home() {
     clearInterval(interval);
     setScanProgress(100);
 
-    // Mock data para demonstra√ß√£o
+    // Mock data para demonstraÁ„o
     const mockTransactions: Transaction[] = Array.from({ length: 12 }, (_, i) => ({
       id: `trx-${i}`,
       date: new Date(2025, 11, i + 1).toISOString().split('T')[0],
       description: [
-        'PIX Recebido - Jo√£o Silva',
-        'Transfer√™ncia TED - Empresa XYZ',
-        'Compra D√©bito - Supermercado',
+        'PIX Recebido - Jo„o Silva',
+        'TransferÍncia TED - Empresa XYZ',
+        'Compra DÈbito - Supermercado',
         'PIX Enviado - Maria Santos',
-        'Pagamento Fatura Cart√£o',
-        'Dep√≥sito Autom√°tico',
-        'Taxa de Servi√ßo',
+        'Pagamento Fatura Cart„o',
+        'DepÛsito Autom·tico',
+        'Taxa de ServiÁo',
         'Resgate Investimentos',
         'Boleto Pagamento',
-        'Transfer√™ncia PIX - Cliente',
+        'TransferÍncia PIX - Cliente',
         'Cashback',
-        'Manuten√ß√£o Conta'
+        'ManutenÁ„o Conta'
       ][i],
       amount: [150.50, -500.00, -85.30, -200.00, -1200.00, 3000.00, -15.90, 2500.00, -350.75, 420.00, 25.50, -9.90][i],
-      category: ['Entrada', 'Sa√≠da', 'Alimenta√ß√£o', 'Transfer√™ncia', 'Cart√£o', 'Entrada', 'Taxa', 'Investimento', 'Pagamento', 'Entrada', 'Cashback', 'Taxa'][i]
+      category: ['Entrada', 'SaÌda', 'AlimentaÁ„o', 'TransferÍncia', 'Cart„o', 'Entrada', 'Taxa', 'Investimento', 'Pagamento', 'Entrada', 'Cashback', 'Taxa'][i]
     }));
 
     const totalAmount = mockTransactions.reduce((sum, t) => sum + t.amount, 0);
@@ -278,7 +278,7 @@ export default function Home() {
         },
         transactions: mockTransactions,
         ofxContent: 'OFXHEADER:100\nDATA:OFXSGML\nVERSION:102\n...',
-        detectedText: 'Texto extra√≠do do PDF...'
+        detectedText: 'Texto extraÌdo do PDF...'
       });
       setIsConverting(false);
       setShowAnimation(false);
@@ -330,7 +330,7 @@ export default function Home() {
             </h1>
           </div>
           <p className="text-lg md:text-xl text-gray-300 mb-6 max-w-2xl mx-auto">
-            Converte automaticamente extratos banc√°rios em PDF para formato OFX com intelig√™ncia artificial
+            Converte automaticamente extratos banc·rios em PDF para formato OFX com inteligÍncia artificial
           </p>
           
           <div className="flex flex-wrap justify-center gap-4 mb-8">
@@ -340,7 +340,7 @@ export default function Home() {
             </div>
             <div className="flex items-center gap-2 text-sm text-emerald-300 bg-emerald-900/30 px-4 py-2 rounded-full">
               <Zap className="w-4 h-4" />
-              <span>Processamento R√°pido</span>
+              <span>Processamento R·pido</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-emerald-300 bg-emerald-900/30 px-4 py-2 rounded-full">
               <Sparkles className="w-4 h-4" />
@@ -403,7 +403,7 @@ export default function Home() {
                             {selectedFile.name}
                           </p>
                           <p className="text-sm text-gray-400">
-                            {(selectedFile.size / 1024 / 1024).toFixed(2)} MB ‚Ä¢ Pronto para convers√£o
+                            {(selectedFile.size / 1024 / 1024).toFixed(2)} MB ï Pronto para convers„o
                           </p>
                         </>
                       ) : (
@@ -416,7 +416,7 @@ export default function Home() {
                           </p>
                           <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
                             <Shield className="w-3 h-3" />
-                            <span>Seus dados s√£o processados localmente</span>
+                            <span>Seus dados s„o processados localmente</span>
                           </div>
                         </>
                       )}
@@ -441,7 +441,7 @@ export default function Home() {
                     </button>
                     <div className="flex items-center gap-2 text-sm text-green-400">
                       <Check className="w-4 h-4" />
-                      <span>Arquivo v√°lido</span>
+                      <span>Arquivo v·lido</span>
                     </div>
                   </div>
                 )}
@@ -454,7 +454,7 @@ export default function Home() {
                   <div className="text-2xl font-bold text-emerald-400">{Object.keys(BANKS).length}</div>
                 </div>
                 <div className="bg-gray-800/40 backdrop-blur-sm rounded-2xl p-4 border border-gray-700/50">
-                  <div className="text-sm text-gray-400 mb-1">Convers√µes Hoje</div>
+                  <div className="text-sm text-gray-400 mb-1">Conversıes Hoje</div>
                   <div className="text-2xl font-bold text-emerald-400">1,247</div>
                 </div>
               </div>
@@ -507,7 +507,7 @@ export default function Home() {
                               {bank.supported ? (
                                 <>
                                   <Check className="w-3 h-3 text-green-400" />
-                                  <span>Totalmente compat√≠vel</span>
+                                  <span>Totalmente compatÌvel</span>
                                 </>
                               ) : (
                                 <span className="text-yellow-400">Em desenvolvimento</span>
@@ -549,10 +549,10 @@ export default function Home() {
                     <div className="flex items-start gap-3">
                       <Sparkles className="w-5 h-5 text-emerald-400 mt-0.5" />
                       <div>
-                        <h4 className="font-semibold text-emerald-300 mb-1">Detec√ß√£o Autom√°tica Ativada</h4>
+                        <h4 className="font-semibold text-emerald-300 mb-1">DetecÁ„o Autom·tica Ativada</h4>
                         <p className="text-sm text-gray-400">
                           Nosso sistema identifica automaticamente o layout do banco usando IA.
-                          N√£o precisa selecionar manualmente!
+                          N„o precisa selecionar manualmente!
                         </p>
                       </div>
                     </div>
@@ -622,7 +622,7 @@ export default function Home() {
 
                 {/* Processing Steps */}
                 <div className="grid grid-cols-3 gap-4 mt-12">
-                  {['Leitura OCR', 'An√°lise de Layout', 'Convers√£o OFX'].map((step, index) => (
+                  {['Leitura OCR', 'An·lise de Layout', 'Convers„o OFX'].map((step, index) => (
                     <div key={step} className="text-center">
                       <div className={`w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center ${
                         scanProgress > (index * 33) + 20 
@@ -653,7 +653,7 @@ export default function Home() {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                   <div>
                     <h2 className="text-3xl font-bold text-white mb-2">
-                      Convers√£o Conclu√≠da!
+                      Convers„o ConcluÌda!
                     </h2>
                     <p className="text-gray-300">
                       Extrato convertido com sucesso para formato OFX
@@ -688,7 +688,7 @@ export default function Home() {
                       <div className="p-2 bg-emerald-500/20 rounded-lg">
                         <Calendar className="w-5 h-5 text-emerald-400" />
                       </div>
-                      <span className="text-sm text-gray-400">Per√≠odo</span>
+                      <span className="text-sm text-gray-400">PerÌodo</span>
                     </div>
                     <div className="text-xl font-bold text-white">
                       {new Date(result.period.start).toLocaleDateString('pt-BR')} - {new Date(result.period.end).toLocaleDateString('pt-BR')}
@@ -700,7 +700,7 @@ export default function Home() {
                       <div className="p-2 bg-emerald-500/20 rounded-lg">
                         <FileText className="w-5 h-5 text-emerald-400" />
                       </div>
-                      <span className="text-sm text-gray-400">Transa√ß√µes</span>
+                      <span className="text-sm text-gray-400">TransaÁıes</span>
                     </div>
                     <div className="text-xl font-bold text-white">{result.transactionCount}</div>
                   </div>
@@ -724,7 +724,7 @@ export default function Home() {
                     <div className="p-6 border-b border-gray-700/50">
                       <h3 className="text-xl font-bold text-white flex items-center gap-3">
                         <FileText className="w-6 h-6 text-emerald-400" />
-                        Transa√ß√µes Detectadas
+                        TransaÁıes Detectadas
                       </h3>
                     </div>
                     <div className="overflow-x-auto">
@@ -732,7 +732,7 @@ export default function Home() {
                         <thead className="bg-gray-800/50">
                           <tr>
                             <th className="text-left p-4 text-gray-400 font-medium">Data</th>
-                            <th className="text-left p-4 text-gray-400 font-medium">Descri√ß√£o</th>
+                            <th className="text-left p-4 text-gray-400 font-medium">DescriÁ„o</th>
                             <th className="text-left p-4 text-gray-400 font-medium">Categoria</th>
                             <th className="text-left p-4 text-gray-400 font-medium">Valor</th>
                           </tr>
@@ -794,8 +794,8 @@ export default function Home() {
 
         {/* Footer */}
         <footer className="mt-12 text-center text-gray-500 text-sm">
-          <p>¬© 2025 HBM OFX Converter. Todos os direitos reservados.</p>
-          <p className="mt-2 text-xs">Processamento seguro ‚Ä¢ Dados nunca s√£o armazenados ‚Ä¢ Compat√≠vel com principais softwares financeiros</p>
+          <p>© 2025 HBM OFX Converter. Todos os direitos reservados.</p>
+          <p className="mt-2 text-xs">Processamento seguro ï Dados nunca s„o armazenados ï CompatÌvel com principais softwares financeiros</p>
         </footer>
       </div>
 
@@ -842,4 +842,3 @@ export default function Home() {
       `}</style>
     </div>
   );
-}// Timestamp: 12/03/2025 17:52:41
