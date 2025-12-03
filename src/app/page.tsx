@@ -16,8 +16,11 @@ import {
   Calendar,
   DollarSign,
   FileCode,
-  Scan
+  Scan,
+  Settings,
+  Plus
 } from 'lucide-react';
+import LayoutEditor from '../components/LayoutEditor';
 
 type BankType = 'auto' | 'bb_layout1' | 'itau_layout1' | 'santander_layout1' | 'safra_layout1' | 'sicoob_layout1' | 'sicoob_layout2' | 'sicredi_layout1' | 'sicredi_layout2' | 'pagseguro_layout1' | 'revolution_layout1';
 
@@ -29,7 +32,7 @@ const BANKS: Record<BankType, {
   supported: boolean;
 }> = {
   'auto': { 
-    name: 'Detecção Automática', 
+    name: 'Detecï¿½ï¿½o Automï¿½tica', 
     icon: '??', 
     color: 'from-blue-500 to-cyan-400',
     supported: true
@@ -42,7 +45,7 @@ const BANKS: Record<BankType, {
     supported: true
   },
   'itau_layout1': { 
-    name: 'Itaú Unibanco', 
+    name: 'Itaï¿½ Unibanco', 
     icon: '??', 
     color: 'from-orange-600 to-orange-400',
     layout: '/layouts/layout_itau_1.png',
@@ -136,6 +139,9 @@ export default function Home() {
   const [dragOver, setDragOver] = useState(false);
   const [fileError, setFileError] = useState<string | null>(null);
   const [scanProgress, setScanProgress] = useState(0);
+  const [useCustomLayout, setUseCustomLayout] = useState(false);
+  const [customLayouts, setCustomLayouts] = useState<any[]>([]);
+  const [selectedCustomLayout, setSelectedCustomLayout] = useState<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -150,7 +156,19 @@ export default function Home() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Animação de progresso
+  // Carregar layouts personalizados do localStorage
+  useEffect(() => {
+    try {
+      const savedLayouts = localStorage.getItem('customLayouts');
+      if (savedLayouts) {
+        setCustomLayouts(JSON.parse(savedLayouts));
+      }
+    } catch (error) {
+      console.error('Erro ao carregar layouts personalizados:', error);
+    }
+  }, []);
+
+  // Animaï¿½ï¿½o de progresso
   useEffect(() => {
     if (showAnimation) {
       const interval = setInterval(() => {
@@ -177,7 +195,7 @@ export default function Home() {
         return;
       }
       if (file.size > 10 * 1024 * 1024) { // 10MB limit
-        setFileError('Arquivo muito grande. Máximo 10MB');
+        setFileError('Arquivo muito grande. Mï¿½ximo 10MB');
         return;
       }
       setSelectedFile(file);
@@ -205,7 +223,7 @@ export default function Home() {
         return;
       }
       if (file.size > 10 * 1024 * 1024) {
-        setFileError('Arquivo muito grande. Máximo 10MB');
+        setFileError('Arquivo muito grande. Mï¿½ximo 10MB');
         return;
       }
       setSelectedFile(file);
@@ -241,26 +259,26 @@ export default function Home() {
     clearInterval(interval);
     setScanProgress(100);
 
-    // Mock data para demonstração
+    // Mock data para demonstraï¿½ï¿½o
     const mockTransactions: Transaction[] = Array.from({ length: 12 }, (_, i) => ({
       id: `trx-${i}`,
       date: new Date(2025, 11, i + 1).toISOString().split('T')[0],
       description: [
-        'PIX Recebido - João Silva',
-        'Transferência TED - Empresa XYZ',
-        'Compra Débito - Supermercado',
+        'PIX Recebido - Joï¿½o Silva',
+        'Transferï¿½ncia TED - Empresa XYZ',
+        'Compra Dï¿½bito - Supermercado',
         'PIX Enviado - Maria Santos',
-        'Pagamento Fatura Cartão',
-        'Depósito Automático',
-        'Taxa de Serviço',
+        'Pagamento Fatura Cartï¿½o',
+        'Depï¿½sito Automï¿½tico',
+        'Taxa de Serviï¿½o',
         'Resgate Investimentos',
         'Boleto Pagamento',
-        'Transferência PIX - Cliente',
+        'Transferï¿½ncia PIX - Cliente',
         'Cashback',
-        'Manutenção Conta'
+        'Manutenï¿½ï¿½o Conta'
       ][i],
       amount: [150.50, -500.00, -85.30, -200.00, -1200.00, 3000.00, -15.90, 2500.00, -350.75, 420.00, 25.50, -9.90][i],
-      category: ['Entrada', 'Saída', 'Alimentação', 'Transferência', 'Cartão', 'Entrada', 'Taxa', 'Investimento', 'Pagamento', 'Entrada', 'Cashback', 'Taxa'][i]
+      category: ['Entrada', 'Saï¿½da', 'Alimentaï¿½ï¿½o', 'Transferï¿½ncia', 'Cartï¿½o', 'Entrada', 'Taxa', 'Investimento', 'Pagamento', 'Entrada', 'Cashback', 'Taxa'][i]
     }));
 
     const totalAmount = mockTransactions.reduce((sum, t) => sum + t.amount, 0);
@@ -278,7 +296,7 @@ export default function Home() {
         },
         transactions: mockTransactions,
         ofxContent: 'OFXHEADER:100\nDATA:OFXSGML\nVERSION:102\n...',
-        detectedText: 'Texto extraído do PDF...'
+        detectedText: 'Texto extraï¿½do do PDF...'
       });
       setIsConverting(false);
       setShowAnimation(false);
@@ -330,7 +348,7 @@ export default function Home() {
             </h1>
           </div>
           <p className="text-lg md:text-xl text-gray-300 mb-6 max-w-2xl mx-auto">
-            Converte automaticamente extratos bancários em PDF para formato OFX com inteligência artificial
+            Converte automaticamente extratos bancï¿½rios em PDF para formato OFX com inteligï¿½ncia artificial
           </p>
           
           <div className="flex flex-wrap justify-center gap-4 mb-8">
@@ -340,7 +358,7 @@ export default function Home() {
             </div>
             <div className="flex items-center gap-2 text-sm text-emerald-300 bg-emerald-900/30 px-4 py-2 rounded-full">
               <Zap className="w-4 h-4" />
-              <span>Processamento Rápido</span>
+              <span>Processamento Rï¿½pido</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-emerald-300 bg-emerald-900/30 px-4 py-2 rounded-full">
               <Sparkles className="w-4 h-4" />
@@ -403,7 +421,7 @@ export default function Home() {
                             {selectedFile.name}
                           </p>
                           <p className="text-sm text-gray-400">
-                            {(selectedFile.size / 1024 / 1024).toFixed(2)} MB • Pronto para conversão
+                            {(selectedFile.size / 1024 / 1024).toFixed(2)} MB ï¿½ Pronto para conversï¿½o
                           </p>
                         </>
                       ) : (
@@ -416,7 +434,7 @@ export default function Home() {
                           </p>
                           <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
                             <Shield className="w-3 h-3" />
-                            <span>Seus dados são processados localmente</span>
+                            <span>Seus dados sï¿½o processados localmente</span>
                           </div>
                         </>
                       )}
@@ -441,7 +459,7 @@ export default function Home() {
                     </button>
                     <div className="flex items-center gap-2 text-sm text-green-400">
                       <Check className="w-4 h-4" />
-                      <span>Arquivo válido</span>
+                      <span>Arquivo vï¿½lido</span>
                     </div>
                   </div>
                 )}
@@ -454,7 +472,7 @@ export default function Home() {
                   <div className="text-2xl font-bold text-emerald-400">{Object.keys(BANKS).length}</div>
                 </div>
                 <div className="bg-gray-800/40 backdrop-blur-sm rounded-2xl p-4 border border-gray-700/50">
-                  <div className="text-sm text-gray-400 mb-1">Conversões Hoje</div>
+                  <div className="text-sm text-gray-400 mb-1">Conversï¿½es Hoje</div>
                   <div className="text-2xl font-bold text-emerald-400">1,247</div>
                 </div>
               </div>
@@ -507,7 +525,7 @@ export default function Home() {
                               {bank.supported ? (
                                 <>
                                   <Check className="w-3 h-3 text-green-400" />
-                                  <span>Totalmente compatível</span>
+                                  <span>Totalmente compatï¿½vel</span>
                                 </>
                               ) : (
                                 <span className="text-yellow-400">Em desenvolvimento</span>
@@ -549,10 +567,10 @@ export default function Home() {
                     <div className="flex items-start gap-3">
                       <Sparkles className="w-5 h-5 text-emerald-400 mt-0.5" />
                       <div>
-                        <h4 className="font-semibold text-emerald-300 mb-1">Detecção Automática Ativada</h4>
+                        <h4 className="font-semibold text-emerald-300 mb-1">Detecï¿½ï¿½o Automï¿½tica Ativada</h4>
                         <p className="text-sm text-gray-400">
                           Nosso sistema identifica automaticamente o layout do banco usando IA.
-                          Não precisa selecionar manualmente!
+                          Nï¿½o precisa selecionar manualmente!
                         </p>
                       </div>
                     </div>
@@ -581,6 +599,18 @@ export default function Home() {
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
               </button>
+
+              {/* Configure Layout Button */}
+              <a
+                href="/configurar-layout"
+                className="w-full group relative overflow-hidden bg-gradient-to-r from-purple-600 via-indigo-500 to-purple-600 hover:from-purple-500 hover:via-indigo-400 hover:to-purple-500 text-white font-bold py-5 px-8 rounded-2xl text-xl shadow-2xl transform transition-all duration-300"
+              >
+                <div className="relative z-10 flex items-center justify-center gap-3">
+                  <FileCode className="w-6 h-6 group-hover:animate-pulse" />
+                  <span>Configurar Layout Personalizado</span>
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+              </a>
             </div>
           </div>
         ) : null}
@@ -622,7 +652,7 @@ export default function Home() {
 
                 {/* Processing Steps */}
                 <div className="grid grid-cols-3 gap-4 mt-12">
-                  {['Leitura OCR', 'Análise de Layout', 'Conversão OFX'].map((step, index) => (
+                  {['Leitura OCR', 'Anï¿½lise de Layout', 'Conversï¿½o OFX'].map((step, index) => (
                     <div key={step} className="text-center">
                       <div className={`w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center ${
                         scanProgress > (index * 33) + 20 
@@ -653,7 +683,7 @@ export default function Home() {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                   <div>
                     <h2 className="text-3xl font-bold text-white mb-2">
-                      Conversão Concluída!
+                      Conversï¿½o Concluï¿½da!
                     </h2>
                     <p className="text-gray-300">
                       Extrato convertido com sucesso para formato OFX
@@ -688,7 +718,7 @@ export default function Home() {
                       <div className="p-2 bg-emerald-500/20 rounded-lg">
                         <Calendar className="w-5 h-5 text-emerald-400" />
                       </div>
-                      <span className="text-sm text-gray-400">Período</span>
+                      <span className="text-sm text-gray-400">Perï¿½odo</span>
                     </div>
                     <div className="text-xl font-bold text-white">
                       {new Date(result.period.start).toLocaleDateString('pt-BR')} - {new Date(result.period.end).toLocaleDateString('pt-BR')}
@@ -700,7 +730,7 @@ export default function Home() {
                       <div className="p-2 bg-emerald-500/20 rounded-lg">
                         <FileText className="w-5 h-5 text-emerald-400" />
                       </div>
-                      <span className="text-sm text-gray-400">Transações</span>
+                      <span className="text-sm text-gray-400">Transaï¿½ï¿½es</span>
                     </div>
                     <div className="text-xl font-bold text-white">{result.transactionCount}</div>
                   </div>
@@ -724,7 +754,7 @@ export default function Home() {
                     <div className="p-6 border-b border-gray-700/50">
                       <h3 className="text-xl font-bold text-white flex items-center gap-3">
                         <FileText className="w-6 h-6 text-emerald-400" />
-                        Transações Detectadas
+                        Transaï¿½ï¿½es Detectadas
                       </h3>
                     </div>
                     <div className="overflow-x-auto">
@@ -732,7 +762,7 @@ export default function Home() {
                         <thead className="bg-gray-800/50">
                           <tr>
                             <th className="text-left p-4 text-gray-400 font-medium">Data</th>
-                            <th className="text-left p-4 text-gray-400 font-medium">Descrição</th>
+                            <th className="text-left p-4 text-gray-400 font-medium">Descriï¿½ï¿½o</th>
                             <th className="text-left p-4 text-gray-400 font-medium">Categoria</th>
                             <th className="text-left p-4 text-gray-400 font-medium">Valor</th>
                           </tr>
@@ -794,8 +824,8 @@ export default function Home() {
 
         {/* Footer */}
         <footer className="mt-12 text-center text-gray-500 text-sm">
-          <p>© 2025 HBM OFX Converter. Todos os direitos reservados.</p>
-          <p className="mt-2 text-xs">Processamento seguro • Dados nunca são armazenados • Compatível com principais softwares financeiros</p>
+          <p>ï¿½ 2025 HBM OFX Converter. Todos os direitos reservados.</p>
+          <p className="mt-2 text-xs">Processamento seguro ï¿½ Dados nunca sï¿½o armazenados ï¿½ Compatï¿½vel com principais softwares financeiros</p>
         </footer>
       </div>
 
