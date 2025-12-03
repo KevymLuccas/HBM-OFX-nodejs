@@ -1,12 +1,129 @@
 ﻿import { NextRequest, NextResponse } from 'next/server';
-import formidable from 'formidable';
-import fs from 'fs';
 import pdfParse from 'pdf-parse';
+
+const BANK_PATTERNS = {
+  // Detecção automática
+  auto: {
+    detect: (text: string) => {
+      const lower = text.toLowerCase();
+      if (lower.includes('banco do brasil') || lower.includes('001-9')) return 'bb_layout1';
+      if (lower.includes('itaú') || lower.includes('341-7')) return 'itau_layout1';
+      if (lower.includes('santander') || lower.includes('033-7')) return 'santander_layout1';
+      if (lower.includes('safra') || lower.includes('422-7')) return 'safra_layout1';
+      if (lower.includes('sicoob') || lower.includes('756-0')) return 'sicoob_layout1';
+      if (lower.includes('sicredi') || lower.includes('748-6')) return 'sicredi_layout1';
+      if (lower.includes('pagseguro') || lower.includes('290-7')) return 'pagseguro_layout1';
+      if (lower.includes('revolution') || lower.includes('cora')) return 'revolution_layout1';
+      return 'generico';
+    }
+  },
+
+  // Banco do Brasil Layout 1
+  bb_layout1: {
+    pattern: /(\d{2}\/\d{2}\/\d{4})\s+(.+?)\s+([-+]?\d+[.,]\d{2})/g,
+    dateFormat: (date: string) => {
+      const [day, month, year] = date.split('/');
+      return year + month.padStart(2, '0') + day.padStart(2, '0');
+    }
+  },
+
+  // Itaú Layout 1  
+  itau_layout1: {
+    pattern: /(\d{2}\/\d{2}\/\d{4})\s+(.+?)\s+([-+]?\d+[.,]\d{2})/g,
+    dateFormat: (date: string) => {
+      const [day, month, year] = date.split('/');
+      return year + month.padStart(2, '0') + day.padStart(2, '0');
+    }
+  },
+
+  // Santander Layout 1
+  santander_layout1: {
+    pattern: /(\d{2}\/\d{2}\/\d{4})\s+(.+?)\s+([-+]?\d+[.,]\d{2})/g,
+    dateFormat: (date: string) => {
+      const [day, month, year] = date.split('/');
+      return year + month.padStart(2, '0') + day.padStart(2, '0');
+    }
+  },
+
+  // Safra Layout 1
+  safra_layout1: {
+    pattern: /(\d{2}\/\d{2}\/\d{4})\s+(.+?)\s+([-+]?\d+[.,]\d{2})/g,
+    dateFormat: (date: string) => {
+      const [day, month, year] = date.split('/');
+      return year + month.padStart(2, '0') + day.padStart(2, '0');
+    }
+  },
+
+  // Sicoob Layout 1
+  sicoob_layout1: {
+    pattern: /(\d{2}\/\d{2}\/\d{4})\s+(.+?)\s+([-+]?\d+[.,]\d{2})/g,
+    dateFormat: (date: string) => {
+      const [day, month, year] = date.split('/');
+      return year + month.padStart(2, '0') + day.padStart(2, '0');
+    }
+  },
+
+  // Sicoob Layout 2
+  sicoob_layout2: {
+    pattern: /(\d{2}\/\d{2})\s+(.+?)\s+([-+]?\d+[.,]\d{2})/g,
+    dateFormat: (date: string) => {
+      const [day, month] = date.split('/');
+      const year = new Date().getFullYear();
+      return year + month.padStart(2, '0') + day.padStart(2, '0');
+    }
+  },
+
+  // Sicredi Layout 1
+  sicredi_layout1: {
+    pattern: /(\d{2}\/\d{2}\/\d{4})\s+(.+?)\s+([-+]?\d+[.,]\d{2})/g,
+    dateFormat: (date: string) => {
+      const [day, month, year] = date.split('/');
+      return year + month.padStart(2, '0') + day.padStart(2, '0');
+    }
+  },
+
+  // Sicredi Layout 2
+  sicredi_layout2: {
+    pattern: /(\d{2}-\d{2}-\d{4})\s+(.+?)\s+([-+]?\d+[.,]\d{2})/g,
+    dateFormat: (date: string) => {
+      const [day, month, year] = date.split('-');
+      return year + month.padStart(2, '0') + day.padStart(2, '0');
+    }
+  },
+
+  // PagSeguro Layout Padrão
+  pagseguro_layout1: {
+    pattern: /(\d{2}\/\d{2}\/\d{4})\s+(.+?)\s+R\$\s*([-+]?\d+[.,]\d{2})/g,
+    dateFormat: (date: string) => {
+      const [day, month, year] = date.split('/');
+      return year + month.padStart(2, '0') + day.padStart(2, '0');
+    }
+  },
+
+  // Revolution/Cora Layout Padrão
+  revolution_layout1: {
+    pattern: /(\d{2}\/\d{2}\/\d{4})\s+(.+?)\s+([-+]?\d+[.,]\d{2})/g,
+    dateFormat: (date: string) => {
+      const [day, month, year] = date.split('/');
+      return year + month.padStart(2, '0') + day.padStart(2, '0');
+    }
+  },
+
+  // Padrão genérico
+  generico: {
+    pattern: /(\d{2}\/\d{2}\/\d{4})\s+(.+?)\s+([-+]?\d+[.,]\d{2})/g,
+    dateFormat: (date: string) => {
+      const [day, month, year] = date.split('/');
+      return year + month.padStart(2, '0') + day.padStart(2, '0');
+    }
+  }
+};
 
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
+    const selectedBankType = formData.get('bankType') as string || 'auto';
     
     if (!file) {
       return NextResponse.json({ error: 'Nenhum arquivo enviado' }, { status: 400 });
@@ -20,103 +137,60 @@ export async function POST(request: NextRequest) {
     const pdfData = await pdfParse(buffer);
     const pdfText = pdfData.text;
 
-    // Detectar tipo de banco baseado no conteúdo
-    const bankType = detectBankType(pdfText);
+    // Determinar o tipo de banco
+    let bankType = selectedBankType;
+    if (selectedBankType === 'auto') {
+      bankType = BANK_PATTERNS.auto.detect(pdfText);
+    }
     
-    // Processar extrato baseado no tipo de banco
-    const transactions = processStatementByBank(pdfText, bankType);
+    // Processar extrato com o padrão específico
+    const bankConfig = BANK_PATTERNS[bankType] || BANK_PATTERNS.generico;
+    const transactions = extractTransactions(pdfText, bankConfig);
     
     // Gerar OFX
     const ofxContent = generateOFX(transactions, bankType);
 
     return NextResponse.json({
       success: true,
-      bankType,
+      bankType: bankType,
+      layoutUsed: bankType,
       transactionCount: transactions.length,
-      ofxContent
+      ofxContent,
+      detectedText: pdfText.substring(0, 500) // Para debug
     });
 
   } catch (error) {
     console.error('Erro na conversão:', error);
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor: ' + error.message },
       { status: 500 }
     );
   }
 }
 
-function detectBankType(text: string): string {
-  const textLower = text.toLowerCase();
-  
-  if (textLower.includes('banco do brasil') || textLower.includes('001-9')) {
-    return 'bb';
-  } else if (textLower.includes('caixa econômica') || textLower.includes('104-0')) {
-    return 'caixa';
-  } else if (textLower.includes('bradesco') || textLower.includes('237-2')) {
-    return 'bradesco';
-  } else if (textLower.includes('itaú') || textLower.includes('341-7')) {
-    return 'itau';
-  } else if (textLower.includes('santander') || textLower.includes('033-7')) {
-    return 'santander';
-  } else if (textLower.includes('nubank') || textLower.includes('nu pagamentos')) {
-    return 'nubank';
-  }
-  
-  return 'generico';
-}
-
-function processStatementByBank(text: string, bankType: string) {
+function extractTransactions(text: string, config: any) {
   const transactions = [];
-  
-  // Padrões regex básicos para diferentes bancos
-  const patterns = {
-    bb: /(\d{2}\/\d{2}\/\d{4})\s+(.+?)\s+([-]?\d+[,]\d{2})/g,
-    caixa: /(\d{2}\/\d{2}\/\d{4})\s+(.+?)\s+([-]?\d+[,]\d{2})/g,
-    bradesco: /(\d{2}\/\d{2})\s+(.+?)\s+([-]?\d+[,]\d{2})/g,
-    itau: /(\d{2}\/\d{2}\/\d{4})\s+(.+?)\s+([-]?\d+[,]\d{2})/g,
-    santander: /(\d{2}\/\d{2}\/\d{4})\s+(.+?)\s+([-]?\d+[,]\d{2})/g,
-    nubank: /(\d{2}\s\w{3}\s\d{4})\s+(.+?)\s+R\$\s*([-]?\d+[,]\d{2})/g,
-    generico: /(\d{2}\/\d{2}\/\d{4})\s+(.+?)\s+([-]?\d+[,]\d{2})/g
-  };
-
-  const pattern = patterns[bankType] || patterns.generico;
   let match;
 
-  while ((match = pattern.exec(text)) !== null) {
+  while ((match = config.pattern.exec(text)) !== null) {
     const [, date, description, amount] = match;
     
-    transactions.push({
-      date: formatDate(date, bankType),
-      description: description.trim(),
-      amount: parseFloat(amount.replace(',', '.'))
-    });
+    // Limpar descrição
+    const cleanDesc = description.trim().replace(/\s+/g, ' ');
+    
+    // Converter valor
+    const cleanAmount = parseFloat(amount.replace(/[.,](\d{2})$/, '.').replace(/[^\d.-]/g, ''));
+    
+    if (!isNaN(cleanAmount) && cleanDesc.length > 2) {
+      transactions.push({
+        date: config.dateFormat(date),
+        description: cleanDesc,
+        amount: cleanAmount
+      });
+    }
   }
 
   return transactions;
-}
-
-function formatDate(dateStr: string, bankType: string): string {
-  // Converter diferentes formatos de data para YYYYMMDD
-  if (bankType === 'nubank') {
-    // Formato: "02 NOV 2024"
-    const months = {
-      'JAN': '01', 'FEV': '02', 'MAR': '03', 'ABR': '04',
-      'MAI': '05', 'JUN': '06', 'JUL': '07', 'AGO': '08',
-      'SET': '09', 'OUT': '10', 'NOV': '11', 'DEZ': '12'
-    };
-    const [day, month, year] = dateStr.split(' ');
-    return year + months[month] + day.padStart(2, '0');
-  } else {
-    // Formato DD/MM/YYYY ou DD/MM
-    const parts = dateStr.split('/');
-    if (parts.length === 2) {
-      // Assumir ano atual se não fornecido
-      const currentYear = new Date().getFullYear();
-      return currentYear + parts[1].padStart(2, '0') + parts[0].padStart(2, '0');
-    } else {
-      return parts[2] + parts[1].padStart(2, '0') + parts[0].padStart(2, '0');
-    }
-  }
 }
 
 function generateOFX(transactions: any[], bankType: string): string {
@@ -154,7 +228,7 @@ NEWFILEUID:NONE
 <CURDEF>BRL
 <BANKACCTFROM>
 <BANKID>001
-<ACCTID>123456
+<ACCTID>123456-
 <ACCTTYPE>CHECKING
 </BANKACCTFROM>
 <BANKTRANLIST>
@@ -164,6 +238,8 @@ NEWFILEUID:NONE
 
   transactions.forEach((transaction, index) => {
     const type = transaction.amount < 0 ? 'DEBIT' : 'CREDIT';
+    const fitId = ${bankType}__;
+    
     ofx += <STMTTRN>
 <TRNTYPE>
 <DTPOSTED>000000

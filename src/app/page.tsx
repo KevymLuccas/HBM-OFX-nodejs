@@ -2,11 +2,27 @@
 
 import { useState } from 'react';
 
+const BANKS = {
+  'auto': { name: 'Detecção Automática', icon: '' },
+  'bb_layout1': { name: 'Banco do Brasil - Layout 1', icon: '', layout: '/layouts/banco_do_brasil_layout_1.png' },
+  'itau_layout1': { name: 'Itaú - Layout 1', icon: '', layout: '/layouts/layout_itau_1.png' },
+  'santander_layout1': { name: 'Santander - Layout 1', icon: '', layout: '/layouts/santander_layout_1.png' },
+  'safra_layout1': { name: 'Safra - Layout 1', icon: '', layout: '/layouts/safra_layout_1.png' },
+  'sicoob_layout1': { name: 'Sicoob - Layout 1', icon: '', layout: '/layouts/sicoob_layout_1.png' },
+  'sicoob_layout2': { name: 'Sicoob - Layout 2', icon: '', layout: '/layouts/sicoob_layout_2.png' },
+  'sicredi_layout1': { name: 'Sicredi - Layout 1', icon: '', layout: '/layouts/sicredi_layout_1.png' },
+  'sicredi_layout2': { name: 'Sicredi - Layout 2', icon: '', layout: '/layouts/sicredi_layout_2.png' },
+  'pagseguro_layout1': { name: 'PagSeguro - Layout Padrão', icon: '', layout: '/layouts/pagseguro_layout.png' },
+  'revolution_layout1': { name: 'Revolution/Cora - Layout Padrão', icon: '', layout: '/layouts/revolution_layout.png' }
+};
+
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
+  const [selectedBank, setSelectedBank] = useState('auto');
   const [isConverting, setIsConverting] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showLayout, setShowLayout] = useState(false);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
@@ -16,6 +32,11 @@ export default function Home() {
     } else {
       setError('Por favor, selecione um arquivo PDF válido.');
     }
+  };
+
+  const handleBankChange = (bankCode: string) => {
+    setSelectedBank(bankCode);
+    setShowLayout(false);
   };
 
   const handleConvert = async () => {
@@ -30,6 +51,7 @@ export default function Home() {
 
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('bankType', selectedBank);
 
     try {
       const response = await fetch('/api/convert', {
@@ -78,7 +100,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-8">
-      <div className="text-center max-w-4xl w-full">
+      <div className="text-center max-w-6xl w-full">
         <h1 className="text-6xl font-bold mb-8 animate-pulse">
            HBM OFX 
         </h1>
@@ -88,9 +110,60 @@ export default function Home() {
         </h2>
         
         <p className="text-xl mb-8 text-gray-300">
-          Converta seus extratos bancários em PDF para o formato OFX automaticamente
+          Selecione o banco e converta seus extratos para OFX automaticamente
         </p>
+
+        {/* Seleção do Banco */}
+        <div className="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
+          <h3 className="text-2xl font-bold mb-4 text-white">Selecione o Banco</h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            {Object.entries(BANKS).map(([code, bank]) => (
+              <button
+                key={code}
+                onClick={() => handleBankChange(code)}
+                className={`p-3 rounded-lg text-sm font-medium transition-all ${
+                  selectedBank === code
+                    ? 'bg-blue-600 text-white shadow-lg scale-105'
+                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                }`}
+              >
+                <span className="text-lg">{bank.icon}</span>
+                <div className="mt-1">{bank.name}</div>
+              </button>
+            ))}
+          </div>
+          
+          {selectedBank !== 'auto' && BANKS[selectedBank]?.layout && (
+            <div className="mt-4 flex justify-center">
+              <button
+                onClick={() => setShowLayout(!showLayout)}
+                className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm"
+              >
+                {showLayout ? ' Ocultar Layout' : ' Ver Layout do PDF'}
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Visualização do Layout */}
+        {showLayout && selectedBank !== 'auto' && BANKS[selectedBank]?.layout && (
+          <div className="bg-white p-6 rounded-lg shadow-lg mb-8">
+            <h3 className="text-xl font-bold mb-4 text-black">
+              Layout do {BANKS[selectedBank].name}
+            </h3>
+            <img 
+              src={BANKS[selectedBank].layout} 
+              alt={`Layout ${BANKS[selectedBank].name}`}
+              className="max-w-full h-auto rounded border shadow-lg mx-auto"
+              style={{ maxHeight: '400px' }}
+            />
+            <p className="text-sm text-gray-600 mt-2">
+              Este é o formato esperado do seu PDF
+            </p>
+          </div>
+        )}
         
+        {/* Upload de Arquivo */}
         <div className="bg-white text-black p-6 rounded-lg shadow-lg mb-8">
           <h3 className="text-2xl font-bold mb-4">Upload de PDF</h3>
           <div 
@@ -138,6 +211,9 @@ export default function Home() {
               <p className="text-sm text-blue-700">
                 <strong>Arquivo:</strong> {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
               </p>
+              <p className="text-sm text-blue-700">
+                <strong>Banco:</strong> {BANKS[selectedBank].name}
+              </p>
             </div>
           )}
         </div>
@@ -152,6 +228,7 @@ export default function Home() {
           <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
             <h4 className="font-bold mb-2"> Conversão realizada com sucesso!</h4>
             <p><strong>Banco:</strong> {result.bankType.toUpperCase()}</p>
+            <p><strong>Layout:</strong> {result.layoutUsed || 'Padrão'}</p>
             <p><strong>Transações:</strong> {result.transactionCount}</p>
             <p className="text-sm mt-2"> Arquivo OFX baixado automaticamente</p>
           </div>
@@ -180,24 +257,10 @@ export default function Home() {
         </button>
         
         <div className="mt-8 text-sm text-gray-400">
-          <p> Suporte para principais bancos brasileiros</p>
-          <p> Banco do Brasil  Caixa  Bradesco  Itaú  Santander  Nubank</p>
-          <p> Download automático  Processamento seguro</p>
-        </div>
-
-        <div className="mt-6 grid grid-cols-3 gap-4 text-xs text-gray-500">
-          <div className="bg-gray-800 p-3 rounded">
-            <span className="text-blue-400"></span>
-            <p className="font-semibold">BB  Caixa</p>
-          </div>
-          <div className="bg-gray-800 p-3 rounded">
-            <span className="text-red-400"></span>
-            <p className="font-semibold">Bradesco  Itaú</p>
-          </div>
-          <div className="bg-gray-800 p-3 rounded">
-            <span className="text-purple-400"></span>
-            <p className="font-semibold">Santander  Nubank</p>
-          </div>
+          <p> {Object.keys(BANKS).length - 1} bancos com layouts específicos</p>
+          <p> Detecção automática disponível</p>
+          <p> Visualização de layouts antes da conversão</p>
+          <p> Download automático do arquivo OFX</p>
         </div>
       </div>
     </div>
